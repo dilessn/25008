@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+* {
+      margin: 0;
+      padding: 0;
+    }
+    /*<--清除底部三像素距离-->*/
+    img {
+      vertical-align: top;
+    }
+ 
+    .all {
+      width: 1200px;
+      height: 320px;
+      margin: 100px auto;
+      padding: 5px;
+      border: 1px solid #ccc;
+      position: relative;
+    }
+ 
+    .inner {
+      position: relative;
+      width: 1200px;
+      height: 320px;
+      background-color: pink;
+      overflow: hidden;
+    }
+ 
+    .inner ul {
+      width: 1000%;
+      list-style: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+ 
+    .inner ul li {
+      float: left;
+    }
+ 
+    .focusD {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 1200px;
+      padding: 0 10px;
+      height: 30px;
+      box-sizing: border-box;
+     display: none;
+    }
+ 
+    .inner ol {
+      position: absolute;
+      right: 30px;
+      bottom: 10px;
+    }
+ 
+    .inner ol li {
+      width: 15px;
+      display: inline-block;
+      height: 15px;
+      margin: 0 3px;
+      cursor: pointer;
+      line-height: 15px;
+      text-align: center;
+      background-color: #fff;
+    }
+    /*当前的高亮的小圆点*/
+    .inner ol .current {
+      background-color: orange;
+      color: #fff;
+    }
+ 
+    .focusD span {
+      display: inline-block;
+      width: 25px;
+      font-size: 24px;
+      height: 30px;
+      color: #ccc;
+      line-height: 30px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+    }
+ 
+    #left {
+      float: left;
+    }
+ 
+    #right {
+      float: right;
+}
+  p{
+            text-align: center;
+            font-size: 25px;
+            color: cadetblue;
+            font-family: fantasy;
+
+        }
+    </style>
+</head>
+<body>
+	<marquee behavior="scroll" direction="left">
+        这里是滚动文字：丙辰中秋，欢饮达旦，大醉，作此篇，兼怀子由。明月几时有？把酒问青天。不知天上宫阙，今夕是何年。我欲乘风归去，又恐琼楼玉宇，高处不胜寒。起舞弄清影，何似在人间。转朱阁，低绮户，照无眠。不应有恨，何事长向别时圆？人有悲欢离合，月有阴晴圆缺，此事古难全。但愿人长久，千里共婵娟。
+    </marquee>
+	<p>图片轮播</p>
+   <div id="box" class="all">
+  <div class="inner"> 
+    <ul>
+      <li><a href="#"><img src="b1.jpg" width="1200" height="320" alt=""></a></li>
+      <li><a href="#"><img src="b2.jpg" width="1200" height="320" alt=""></a></li>
+      <li><a href="#"><img src="b3.jpg" width="1200" height="320" alt=""></a></li>
+      <li><a href="#"><img src="b4.jpg" width="1200" height="320" alt=""></a></li>
+      <li><a href="#"><img src="b5.jpg" width="1200" height="320" alt=""></a></li>
+    </ul>
+    <ol> 
+ 
+    </ol>
+  </div>
+  <div class="focusD" id="arr">
+    <span id="left"><</span>
+    <span id="right">></span>
+  </div>
+</div>
+
+<script>
+  var index=0;
+  var box = my$("box");
+  var inner = box.children[0];
+  var imgWidth = inner.offsetWidth;
+  var ulObj = inner.children[0];
+  var list = ulObj.children;
+  var olObj = inner.children[1];
+  var arr = my$("arr");
+ 
+  for (var i = 0; i < list.length; i++) {
+    var liObjs = document.createElement("li");
+    olObj.appendChild(liObjs);
+    liObjs.innerHTML = (i + 1);
+    liObjs.setAttribute("index", i);
+    liObjs.onmouseover = function () {
+      for (var j = 0; j < olObj.children.length; j++) {
+        olObj.children[j].removeAttribute("class");
+      }
+      this.className = "current";
+       index = this.getAttribute("index");
+      animate(ulObj, -index * imgWidth); 
+    };
+  }
+  olObj.children[0].className = "current";
+  ulObj.appendChild(ulObj.children[0].cloneNode(true));
+ 
+ 
+  var timeId=setInterval(clickHandle,3000);
+ 
+  my$("box").onmouseover=function(){
+   arr.style.display="block";
+   clearInterval(timeId);
+  };
+    my$("right").onclick=clickHandle;
+    function clickHandle() {
+      if (index==ulObj.children.length-1){
+        ulObj.style.left=0+"px";
+        index=0;
+      }
+      index++;
+      animate(ulObj,-index*imgWidth);
+      if (index==list.length-1){
+        olObj.children[0].className="current";
+        olObj.children[olObj.children.length-1].className="";
+      }else {
+        for (var i=0;i<olObj.children.length;i++){
+          olObj.children[i].className="";
+        }
+        olObj.children[index].className="current";
+      }
+    };
+    my$("left").onclick=function () {
+      if (index==0){
+        index=list.length-1;
+        ulObj.style.left=-index*imgWidth+"px";
+      }
+      index--;
+      animate(ulObj,-index*imgWidth);
+      for (var i=0;i<olObj.children.length;i++){
+        olObj.children[i].className="";
+      }
+      olObj.children[index].className="current";
+    };
+ 
+  my$("box").onmouseout=function(){
+    arr.style.display="none";
+    timeId=setInterval(clickHandle,3000);
+  };
+ function animate(element, target) {
+    clearInterval(element.timeId);
+    element.timeId = setInterval(function () {
+      var current = element.offsetLeft;
+      var step = 9;
+      step = current > target ? -step : step;
+      current += step;
+      if (Math.abs(target - current) > Math.abs(step)) {
+        element.style.left = current + "px";
+      } else {
+        clearInterval(element.timeId);
+        element.style.left = target + "px";
+      }
+    }, 10);
+  }
+function my$(id) {
+  　　 return document.getElementById(id);
+}
+</script>
+</body>
+</html>
